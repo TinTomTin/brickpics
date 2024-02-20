@@ -1,4 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
+import numpy as np
 
 class LegoArtPic:
     def __init__(self, pillSize, pilsX, pilsY):
@@ -11,6 +12,10 @@ class LegoArtPic:
     
     def pixelHeight(self):
         return self.pilsY * self.pillSize
+    
+cutboxes = np.array([[0,0,1,1], [1,0,2,1], [2,0,3,1],
+                     [0,1,1,2], [1,1,2,2], [2,1,3,2],
+                     [0,2,1,3], [1,2,2,3], [2,2,3,3]])
 
 def generateColorLegend(pillSize, inputImage):
     colorAdjustedImage = inputImage.convert(mode="P", palette=1, colors=16, dither=3).resize([48, 48])
@@ -58,28 +63,40 @@ def generatePillArt(legoArtPic, inputImage):
             draw.text((px + fontOffset, py + fontOffset), str(int(paletteIndex / 3)),fill=(200, 200, 200), anchor="mm", font_size=25)
     return image
 
-#exp = LegoArtPic(50, 48, 48)
+def splitImage(inputImage, legoArtPic):
+    xStep = int(legoArtPic.pilsX / 3) * legoArtPic.pillSize
+    yStep = int(legoArtPic.pilsY / 3) * legoArtPic.pillSize
+    splitImages = []
+    boxNum = 0
+    for box in cutboxes:
+        boxNum += 1
+        img = inputImage.crop((box[0] * xStep, box[1] * yStep, box[2] * xStep, box[3] * yStep))
+        img.save("cropped{n}.gif".format(n=boxNum))
 
-#inputImage =  Image.open("Kas2.jpg")
-#print('Colors in P mode image: {cols}'.format(cols=len(colorAdjust.getcolors())))
-#colorAdjust = inputImage.convert(mode="RGB", colors=16, dither=3)
-#rgbImage = colorAdjust.convert(mode="RGB", colors=16, palette=1).resize([48,48])
-#print('Colors in RGB mode image: {cols}'.format(cols=len(rgbImage.getcolors())))
+    #for x in np.nditer(cutboxes):
+    #    print(x)
 
-#outputImage = generatePillArt(exp, inputImage)
-#outputImage.save("Kas2.gif")
-#legendImage = generateColorLegend(exp.pillSize, inputImage)
-#legendImage.save("Kas2-legend.gif")
+
+def doExperiment():
+    exp = LegoArtPic(50, 48, 48)
+    inputImage =  Image.open("Boerneef.jpg")
+    outputImage = generatePillArt(exp, inputImage)
+    splitImage(outputImage, exp)
+    #cropped.save("B-cropped.gif")
+    #legendImage = generateColorLegend(exp.pillSize, inputImage)
+    #legendImage.save("Kas2-legend.gif")
+
+#doExperiment()
 
 
 #TODO: split into 9 (3 x 3) tiles
 #TODO: load custom palette
-#TODO: source image as parameter
 #DONE: generate image with pill legend
 #DONE: share using streamlit
 #TODO: load custom font
-#TODO: fix image format on download
+#DONE: fix image format on download
 #TODO: size of generated art smaller. 
 #TODO: Theming
 #TODO: Top banner
 #TODO: zip file with all images for download
+#TODO: adjust color of numbers in pills to stand out
