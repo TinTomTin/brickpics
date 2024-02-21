@@ -1,0 +1,12 @@
+
+#TODO: split into 9 (3 x 3) tiles
+#TODO: load custom palette
+#DONE: generate image with pill legend
+#DONE: share using streamlit
+#TODO: load custom font
+#DONE: fix image format on download
+#TODO: size of generated art smaller. 
+#TODO: Theming
+#TODO: Top banner
+#TODO: zip file with all images for download
+#TODO: adjust color of numbers in pills to stand out

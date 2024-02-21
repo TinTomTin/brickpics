@@ -70,11 +70,8 @@ def splitImage(inputImage, legoArtPic):
     boxNum = 0
     for box in cutboxes:
         boxNum += 1
-        img = inputImage.crop((box[0] * xStep, box[1] * yStep, box[2] * xStep, box[3] * yStep))
-        img.save("cropped{n}.gif".format(n=boxNum))
-
-    #for x in np.nditer(cutboxes):
-    #    print(x)
+        splitImages.append(inputImage.crop((box[0] * xStep, box[1] * yStep, box[2] * xStep, box[3] * yStep)))
+    return splitImages
 
 
 def doExperiment():
