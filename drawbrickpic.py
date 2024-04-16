@@ -1,11 +1,14 @@
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 
+SIDE_LENGTH = 48
+
 class LegoArtPic:
     def __init__(self, pillSize, pilsX, pilsY):
         self.pillSize = pillSize
         self.pilsX = pilsX
         self.pilsY = pilsY
+        self.palette = []
 
     def pixelLength(self):
         return self.pilsX * self.pillSize
@@ -13,9 +16,30 @@ class LegoArtPic:
     def pixelHeight(self):
         return self.pilsY * self.pillSize
     
+  
+paletteTest = [0,0,0,
+               255,255,255,
+               0,200,0]
+
+lego31197Pallette = [0,0,0,
+                     51,51,51,
+                     20,184,217,
+                     206,212,32,
+                     173,109,168,
+                     138,51,130,
+                     92,9,85]
+    
 cutboxes = np.array([[0,0,1,1], [1,0,2,1], [2,0,3,1],
                      [0,1,1,2], [1,1,2,2], [2,1,3,2],
                      [0,2,1,3], [1,2,2,3], [2,2,3,3]])
+
+def adjustImagePalette(legoArtPic, inputImage):
+    if len(legoArtPic.palette) == 0:
+        return inputImage.convert(mode="P", palette=1, colors=16, dither=3).resize([legoArtPic.pilsX, legoArtPic.pilsY])
+    else:
+        t_palImage = Image.new('P', (16, 16))
+        t_palImage.putpalette(legoArtPic.palette)
+        return inputImage.quantize(palette=t_palImage, dither=1).resize([legoArtPic.pilsX, legoArtPic.pilsY])
 
 def generateColorLegend(pillSize, inputImage):
     colorAdjustedImage = inputImage.convert(mode="P", palette=1, colors=16, dither=3).resize([48, 48])
@@ -43,7 +67,8 @@ def generateColorLegend(pillSize, inputImage):
     
 
 def generatePillArt(legoArtPic, inputImage):
-    colorAdjustedImage = inputImage.convert(mode="P", palette=1, colors=16, dither=3).resize([legoArtPic.pilsX, legoArtPic.pilsY])
+    #colorAdjustedImage = inputImage.convert(mode="P", palette=1, colors=16, dither=3).resize([legoArtPic.pilsX, legoArtPic.pilsY])
+    colorAdjustedImage = adjustImagePalette(legoArtPic, inputImage)
     inputPixelMap = colorAdjustedImage.load()
     inputPalette = colorAdjustedImage.getpalette()
     fontOffset = int(legoArtPic.pillSize / 2)
@@ -75,10 +100,15 @@ def splitImage(inputImage, legoArtPic):
 
 
 def doExperiment():
-    exp = LegoArtPic(50, 48, 48)
+    exp = LegoArtPic(50, SIDE_LENGTH, SIDE_LENGTH)
+    exp.palette = lego31197Pallette
     inputImage =  Image.open("Boerneef.jpg")
     outputImage = generatePillArt(exp, inputImage)
-    splitImage(outputImage, exp)
+    #t_palImage = Image.new('P', (16, 16))
+    #t_palImage.putpalette(paletteTest)
+    #converted = outputImage.quantize(palette=t_palImage, dither=0)
+    outputImage.save("2024-04-16_4.gif")
+    #splitImage(outputImage, exp)
     #cropped.save("B-cropped.gif")
     #legendImage = generateColorLegend(exp.pillSize, inputImage)
     #legendImage.save("Kas2-legend.gif")
