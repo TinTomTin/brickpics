@@ -1,6 +1,7 @@
 import streamlit as st
 from PIL import Image
 from io import BytesIO
+from zipfile import ZipFile
 from drawbrickpic import LegoArtPic
 from drawbrickpic import generatePillArt, generateColorLegend, splitImage
 
@@ -12,14 +13,29 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-def download_art(legoArtPic):
+def download_art(legoArtPic: LegoArtPic, mainImage: Image, legendImage: Image, splitImages):
     buffer = BytesIO()
-    legoArtPic.save(buffer, format="GIF")
-    gifBytes = buffer.getvalue()
-    return gifBytes
+    archive = BytesIO()
+    mainFileName = "{n}_main.gif".format(n=legoArtPic.name.replace(" ", "_"))
+    legendFileName = "{n}_legend.gif".format(n=legoArtPic.name.replace(" ", "_"))
+    mainImage.save(buffer, format="GIF")
+    with ZipFile(archive, 'w') as ziparch:
+        with ziparch.open(mainFileName,'w') as mainFile:
+            mainFile.write(buffer.getvalue())
+        for i, tile in enumerate(splitImages):
+            tileName = "{a}_tile_{n}.gif".format(a=legoArtPic.name, n=i)
+            tileBuffer = BytesIO()
+            tile.save(tileBuffer, format="GIF")
+            with ziparch.open(tileName, 'w') as tile:
+                tile.write(tileBuffer.getvalue())
+        with ziparch.open(legendFileName, 'w') as legendFile:
+            legendBuffer = BytesIO()
+            legendImage.save(legendBuffer, format="GIF")
+            legendFile.write(legendBuffer.getvalue())
+    return archive.getvalue()
 
 def makeFileName(artworkName):
-    return "{n}_madeWithBrickPics.gif".format(n=artworkName.replace(" ", "_"))
+    return "{n}_madeWithBrickPics.zip".format(n=artworkName.replace(" ", "_"))
 
 def renderSplitImages(images, tab):
     row1 = tab.columns(3)
@@ -38,6 +54,7 @@ tabOriginal, tabBrickPick, tabLegend, tabSplit = st.tabs(["Original", "Brick Pic
 outputName = st.sidebar.text_input("Name of artwork", value="BrickPick1")
 st.sidebar.markdown("For best results upload an image with 1:1 aspect ratio, or as close as possible")
 inputFile = st.sidebar.file_uploader("Select an image", type=["jpg"], accept_multiple_files=False)
+palette = st.sidebar.radio(":rainbow[Color Palette, not working yet]",["16 colors","Lego palette","Set 31197"], captions=["Best fitting 16 colors", "Official lego palette","Marylin Monroe Lego Art"])
 
 
 
@@ -45,10 +62,14 @@ inputFile = st.sidebar.file_uploader("Select an image", type=["jpg"], accept_mul
 if inputFile is not None:
     uploadedFile = Image.open(inputFile)
     tabOriginal.image(uploadedFile)
+    defaultLegoArtPic.name = outputName
     outputImage = generatePillArt(defaultLegoArtPic, uploadedFile)
     tabBrickPick.image(outputImage, outputName)
     legendImage = generateColorLegend(defaultLegoArtPic.pillSize, uploadedFile)
     tabLegend.image(legendImage,'{fn}-legend'.format(fn=outputName))
     splitImages = splitImage(outputImage, defaultLegoArtPic)
     renderSplitImages(splitImages, tabSplit)
-    st.sidebar.download_button("Download files", download_art(outputImage), file_name=makeFileName(outputName), mime="image/gif" )
+    st.sidebar.download_button("Download files",
+                               download_art(defaultLegoArtPic, outputImage, legendImage, splitImages),
+                               file_name=makeFileName(outputName),
+                               mime="application/x-zip")

@@ -4,11 +4,12 @@ import numpy as np
 SIDE_LENGTH = 48
 
 class LegoArtPic:
-    def __init__(self, pillSize, pilsX, pilsY):
+    def __init__(self, pillSize: int, pilsX: int, pilsY: int):
         self.pillSize = pillSize
         self.pilsX = pilsX
         self.pilsY = pilsY
         self.palette = []
+        self.name = "NoName"
 
     def pixelLength(self):
         return self.pilsX * self.pillSize
@@ -33,7 +34,7 @@ cutboxes = np.array([[0,0,1,1], [1,0,2,1], [2,0,3,1],
                      [0,1,1,2], [1,1,2,2], [2,1,3,2],
                      [0,2,1,3], [1,2,2,3], [2,2,3,3]])
 
-def adjustImagePalette(legoArtPic, inputImage):
+def adjustImagePalette(legoArtPic: LegoArtPic, inputImage: Image):
     if len(legoArtPic.palette) == 0:
         return inputImage.convert(mode="P", palette=1, colors=16, dither=3).resize([legoArtPic.pilsX, legoArtPic.pilsY])
     else:
@@ -88,14 +89,12 @@ def generatePillArt(legoArtPic, inputImage):
             draw.text((px + fontOffset, py + fontOffset), str(int(paletteIndex / 3)),fill=(200, 200, 200), anchor="mm", font_size=25)
     return image
 
-def splitImage(inputImage, legoArtPic):
+def splitImage(imageToSplit: Image, legoArtPic: LegoArtPic):
     xStep = int(legoArtPic.pilsX / 3) * legoArtPic.pillSize
     yStep = int(legoArtPic.pilsY / 3) * legoArtPic.pillSize
     splitImages = []
-    boxNum = 0
     for box in cutboxes:
-        boxNum += 1
-        splitImages.append(inputImage.crop((box[0] * xStep, box[1] * yStep, box[2] * xStep, box[3] * yStep)))
+        splitImages.append(imageToSplit.crop((box[0] * xStep, box[1] * yStep, box[2] * xStep, box[3] * yStep)))
     return splitImages
 
 

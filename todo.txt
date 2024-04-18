@@ -4,12 +4,15 @@
 #TODO: size of generated art smaller. 
 #TODO: Theming
 #TODO: Top banner
-#TODO: zip file with all images for download
 #TODO: adjust color of numbers in pills to stand out
 #TODO: lego palette
 #TODO: allow palette selection in streamlit
 #TODO: somehow the palette adjusting must be made better, I don't know how yet
+#TODO: put code to generate stuff into a module
+#TODO: palette types as enum
+#TODO: parameter type hints
 
+#DONE: zip file with all images for download
 #DONE: split into 9 (3 x 3) tiles
 #DONE: generate image with pill legend
 #DONE: share using streamlit
