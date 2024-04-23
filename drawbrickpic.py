@@ -1,7 +1,13 @@
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
+from enum import Enum
 
 SIDE_LENGTH = 48
+
+class PicPaletteEnum(Enum):
+    BEST16 = 0
+    LEGO = 1
+    MONROE = 2
 
 class LegoArtPic:
     def __init__(self, pillSize: int, pilsX: int, pilsY: int):
@@ -17,6 +23,16 @@ class LegoArtPic:
     def pixelHeight(self):
         return self.pilsY * self.pillSize
     
+    def configure(self, paletteType: PicPaletteEnum, name: str):
+        self.name = name
+        if paletteType is PicPaletteEnum.BEST16:
+            self.palette = []
+        elif paletteType is PicPaletteEnum.MONROE:
+            self.palette = lego31197Pallette
+        elif paletteType is PicPaletteEnum.LEGO:
+            self.palette = paletteTest
+    
+
   
 paletteTest = [0,0,0,
                255,255,255,
@@ -40,7 +56,7 @@ def adjustImagePalette(legoArtPic: LegoArtPic, inputImage: Image):
     else:
         t_palImage = Image.new('P', (16, 16))
         t_palImage.putpalette(legoArtPic.palette)
-        return inputImage.quantize(palette=t_palImage, dither=1).resize([legoArtPic.pilsX, legoArtPic.pilsY])
+        return inputImage.quantize(palette=t_palImage, dither=0).resize([legoArtPic.pilsX, legoArtPic.pilsY])
 
 def generateColorLegend(pillSize, inputImage):
     colorAdjustedImage = inputImage.convert(mode="P", palette=1, colors=16, dither=3).resize([48, 48])
@@ -67,7 +83,7 @@ def generateColorLegend(pillSize, inputImage):
     return legendImage
     
 
-def generatePillArt(legoArtPic, inputImage):
+def generatePillArt(legoArtPic, inputImage) -> Image:
     #colorAdjustedImage = inputImage.convert(mode="P", palette=1, colors=16, dither=3).resize([legoArtPic.pilsX, legoArtPic.pilsY])
     colorAdjustedImage = adjustImagePalette(legoArtPic, inputImage)
     inputPixelMap = colorAdjustedImage.load()
