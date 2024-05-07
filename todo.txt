@@ -5,12 +5,14 @@
 #TODO: Theming
 #TODO: Top banner
 #TODO: adjust color of numbers in pills to stand out
-#TODO: lego palette
+#TODO: palette enum to use text not ints
 #TODO: somehow the palette adjusting must be made better, I don't know how yet
 #TODO: put code to generate stuff into a module
 #TODO: parameter type hints
 #TODO: about tab
 
+#DONE: lego palette
+#DONE: apply palette when generating legend too
 #DONE: allow palette selection in streamlit
 #DONE: palette types as enum
 #DONE: zip file with all images for download

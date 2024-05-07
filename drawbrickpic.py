@@ -1,4 +1,4 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageColor
 import numpy as np
 from enum import Enum
 
@@ -30,13 +30,17 @@ class LegoArtPic:
         elif paletteType is PicPaletteEnum.MONROE:
             self.palette = lego31197Pallette
         elif paletteType is PicPaletteEnum.LEGO:
-            self.palette = paletteTest
+            self.palette = legoPalette
     
-
+def buildLegoPalette():
+    stringPalette = '#F4F4F4,#CCB98D,#BB805A,#B40000,#1E5AA8,#FAC80A,#000000,#00852B,#58AB41,#91501C,#7396C8,#D67923,#069D9F,#A5CA18,#901F76,#70819A,#897D62,#19325A,#00451A,#708E7C,#720012,#FCAC00,#5F3109,#969696,#646464,#9DC3F7,#C8509B,#FF9ECD,#FFEC6C,#441A91,#E1BEA1,#352100,#AA7D55,#469BC3,#68C3E2,#D3F2EA,#A06EB9,#CDA4DE,#E2F99A,#8B844F,#FD5F84,#F5F500,#755945,#CCA373,#CA4C0B,#915C3C,#543F33,#B80000,#ADDDED,#0085B8,#FFE622,#73B464,#FAF15B,#BBB29E,#FD8ECF,#6F7AA4,#E18D0A,#AFD246,#B9953B,#8C8C8C'
+    colorList = stringPalette.split(',')
+    outputPalette = []
+    for col in colorList:
+        outputPalette += ImageColor.getrgb(col)
+    return outputPalette
   
-paletteTest = [0,0,0,
-               255,255,255,
-               0,200,0]
+legoPalette = buildLegoPalette()
 
 lego31197Pallette = [0,0,0,
                      51,51,51,
@@ -58,14 +62,14 @@ def adjustImagePalette(legoArtPic: LegoArtPic, inputImage: Image):
         t_palImage.putpalette(legoArtPic.palette)
         return inputImage.quantize(palette=t_palImage, dither=0).resize([legoArtPic.pilsX, legoArtPic.pilsY])
 
-def generateColorLegend(pillSize, inputImage):
-    colorAdjustedImage = inputImage.convert(mode="P", palette=1, colors=16, dither=3).resize([48, 48])
+def generateColorLegend(lpic: LegoArtPic, inputImage: Image):
+    colorAdjustedImage = adjustImagePalette(lpic, inputImage)
     colorsUsed = colorAdjustedImage.getcolors()
     palette = colorAdjustedImage.getpalette()
     xStart = 30
     yPadding = 10
-    fontOffset = int(pillSize / 2)
-    legendImage = Image.new("RGB", (500, len(colorsUsed) * (pillSize + yPadding)), "#000000")
+    fontOffset = int(lpic.pillSize / 2)
+    legendImage = Image.new("RGB", (500, len(colorsUsed) * (lpic.pillSize + yPadding)), "#000000")
     legendDraw = ImageDraw.Draw(legendImage)
     #legendDraw.font = ImageFont.truetype("FreeMono.ttf", size=30)
     for colNumber in colorsUsed:
@@ -73,9 +77,9 @@ def generateColorLegend(pillSize, inputImage):
         fillColor = (palette[paletteIndex], palette[paletteIndex + 1], palette[paletteIndex +2])
         outlineColor = (fillColor[0] + 25, fillColor[1] + 25, fillColor[2] + 25)
         x1 = xStart
-        y1 = colNumber[1] * pillSize + (colNumber[1] * yPadding)
-        x2 = xStart + pillSize
-        y2 = (colNumber[1] * pillSize ) + (colNumber[1] * yPadding) + pillSize
+        y1 = colNumber[1] * lpic.pillSize + (colNumber[1] * yPadding)
+        x2 = xStart + lpic.pillSize
+        y2 = (colNumber[1] * lpic.pillSize ) + (colNumber[1] * yPadding) + lpic.pillSize
         points = [(x1, y1), (x2, y2)]
         legendDraw.ellipse(points, fill=fillColor, outline=outlineColor, width=3)
         legendDraw.text((x1 + fontOffset, y1 + fontOffset), str(colNumber[1]), fill='white', anchor='mm', font_size=25)
@@ -84,7 +88,6 @@ def generateColorLegend(pillSize, inputImage):
     
 
 def generatePillArt(legoArtPic, inputImage) -> Image:
-    #colorAdjustedImage = inputImage.convert(mode="P", palette=1, colors=16, dither=3).resize([legoArtPic.pilsX, legoArtPic.pilsY])
     colorAdjustedImage = adjustImagePalette(legoArtPic, inputImage)
     inputPixelMap = colorAdjustedImage.load()
     inputPalette = colorAdjustedImage.getpalette()
@@ -115,14 +118,15 @@ def splitImage(imageToSplit: Image, legoArtPic: LegoArtPic):
 
 
 def doExperiment():
-    exp = LegoArtPic(50, SIDE_LENGTH, SIDE_LENGTH)
-    exp.palette = lego31197Pallette
-    inputImage =  Image.open("Boerneef.jpg")
-    outputImage = generatePillArt(exp, inputImage)
+    print(buildLegoPalette())
+    #exp = LegoArtPic(50, SIDE_LENGTH, SIDE_LENGTH)
+    #exp.palette = lego31197Pallette
+    #inputImage =  Image.open("Boerneef.jpg")
+    #outputImage = generatePillArt(exp, inputImage)
     #t_palImage = Image.new('P', (16, 16))
     #t_palImage.putpalette(paletteTest)
     #converted = outputImage.quantize(palette=t_palImage, dither=0)
-    outputImage.save("2024-04-16_4.gif")
+    #outputImage.save("2024-04-16_4.gif")
     #splitImage(outputImage, exp)
     #cropped.save("B-cropped.gif")
     #legendImage = generateColorLegend(exp.pillSize, inputImage)

@@ -50,13 +50,14 @@ def renderSplitImages(images, tab):
 
 st.title("BRICK PICS")
 
-tabOriginal, tabBrickPick, tabLegend, tabSplit = st.tabs(["Original", "Brick Pick", "Legend", "Split"])
+tabOriginal, tabBrickPick, tabLegend, tabSplit, tabAbout = st.tabs(["Original", "Brick Pick", "Legend", "Split","About"])
 
 outputName = st.sidebar.text_input("Name of artwork", value="BrickPick1")
 st.sidebar.markdown("For best results upload an image with 1:1 aspect ratio, or as close as possible")
 inputFile = st.sidebar.file_uploader("Select an image", type=["jpg"], accept_multiple_files=False)
 paletteChoice = st.sidebar.radio(":rainbow[Color Palette, not fully working]", paletteRadioOptions, captions=["Best fitting 16 colors", "Official lego palette","Marylin Monroe Lego Art"])
 
+tabAbout.text("Generate Lego Art style image from input image. The generated image can be built using round 1 x 1 tiles, selected palette is applied.")
 
 
 
@@ -66,7 +67,7 @@ if inputFile is not None:
     defaultLegoArtPic.configure(PicPaletteEnum(paletteRadioOptions.index(paletteChoice)), outputName)
     outputImage = generatePillArt(defaultLegoArtPic, uploadedFile)
     tabBrickPick.image(outputImage, outputName)
-    legendImage = generateColorLegend(defaultLegoArtPic.pillSize, uploadedFile)
+    legendImage = generateColorLegend(defaultLegoArtPic, uploadedFile)
     tabLegend.image(legendImage,'{fn}-legend'.format(fn=outputName))
     splitImages = splitImage(outputImage, defaultLegoArtPic)
     renderSplitImages(splitImages, tabSplit)
