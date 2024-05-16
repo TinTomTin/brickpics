@@ -5,9 +5,9 @@ from enum import Enum
 SIDE_LENGTH = 48
 
 class PicPaletteEnum(Enum):
-    BEST16 = 0
-    LEGO = 1
-    MONROE = 2
+    BEST16 = "16 Colors"
+    LEGO = "Lego palette"
+    MONROE = "Set 31197"
 
 class LegoArtPic:
     def __init__(self, pillSize: int, pilsX: int, pilsY: int):
@@ -118,19 +118,16 @@ def splitImage(imageToSplit: Image, legoArtPic: LegoArtPic):
 
 
 def doExperiment():
-    print(buildLegoPalette())
     #exp = LegoArtPic(50, SIDE_LENGTH, SIDE_LENGTH)
     #exp.palette = lego31197Pallette
     #inputImage =  Image.open("Boerneef.jpg")
     #outputImage = generatePillArt(exp, inputImage)
-    #t_palImage = Image.new('P', (16, 16))
-    #t_palImage.putpalette(paletteTest)
     #converted = outputImage.quantize(palette=t_palImage, dither=0)
     #outputImage.save("2024-04-16_4.gif")
     #splitImage(outputImage, exp)
     #cropped.save("B-cropped.gif")
     #legendImage = generateColorLegend(exp.pillSize, inputImage)
-    #legendImage.save("Kas2-legend.gif")
+    
 
 #doExperiment()
 

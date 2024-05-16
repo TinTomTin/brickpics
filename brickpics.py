@@ -6,7 +6,6 @@ from drawbrickpic import LegoArtPic
 from drawbrickpic import generatePillArt, generateColorLegend, splitImage, PicPaletteEnum
 
 defaultLegoArtPic = LegoArtPic(50, 48, 48)
-paletteRadioOptions = ["16 colors","Lego palette","Set 31197"]
 
 st.set_page_config(
     page_title="Convert image to Lego Art",
@@ -55,7 +54,7 @@ tabOriginal, tabBrickPick, tabLegend, tabSplit, tabAbout = st.tabs(["Original", 
 outputName = st.sidebar.text_input("Name of artwork", value="BrickPick1")
 st.sidebar.markdown("For best results upload an image with 1:1 aspect ratio, or as close as possible")
 inputFile = st.sidebar.file_uploader("Select an image", type=["jpg"], accept_multiple_files=False)
-paletteChoice = st.sidebar.radio(":rainbow[Color Palette, not fully working]", paletteRadioOptions, captions=["Best fitting 16 colors", "Official lego palette","Marylin Monroe Lego Art"])
+paletteChoice = st.sidebar.radio(":rainbow[Color Palette, not fully working]", [e.value for e in PicPaletteEnum], captions=["Best fitting 16 colors", "Official lego palette","Marylin Monroe Lego Art"])
 
 tabAbout.text("Generate Lego Art style image from input image. The generated image can be built using round 1 x 1 tiles, selected palette is applied.")
 
@@ -64,7 +63,7 @@ tabAbout.text("Generate Lego Art style image from input image. The generated ima
 if inputFile is not None:
     uploadedFile = Image.open(inputFile)
     tabOriginal.image(uploadedFile)
-    defaultLegoArtPic.configure(PicPaletteEnum(paletteRadioOptions.index(paletteChoice)), outputName)
+    defaultLegoArtPic.configure(PicPaletteEnum(paletteChoice), outputName)
     outputImage = generatePillArt(defaultLegoArtPic, uploadedFile)
     tabBrickPick.image(outputImage, outputName)
     legendImage = generateColorLegend(defaultLegoArtPic, uploadedFile)
