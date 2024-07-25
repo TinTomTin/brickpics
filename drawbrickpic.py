@@ -118,6 +118,7 @@ def splitImage(imageToSplit: Image, legoArtPic: LegoArtPic):
 
 
 def doExperiment():
+    print(buildLegoPalette())
     #exp = LegoArtPic(50, SIDE_LENGTH, SIDE_LENGTH)
     #exp.palette = lego31197Pallette
     #inputImage =  Image.open("Boerneef.jpg")

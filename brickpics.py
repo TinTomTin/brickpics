@@ -56,8 +56,12 @@ st.sidebar.markdown("For best results upload an image with 1:1 aspect ratio, or 
 inputFile = st.sidebar.file_uploader("Select an image", type=["jpg"], accept_multiple_files=False)
 paletteChoice = st.sidebar.radio(":rainbow[Color Palette, not fully working]", [e.value for e in PicPaletteEnum], captions=["Best fitting 16 colors", "Official lego palette","Marylin Monroe Lego Art"])
 
-tabAbout.text("Generate Lego Art style image from input image. The generated image can be built using round 1 x 1 tiles, selected palette is applied.")
-
+tabAbout.markdown("Converts the uploaded image to a 48 x 48 block picture that can be built using round 48 x 48 tiles.")
+tabAbout.markdown("It will generate instructions to build a 48 x 48 image such as [this set](https://www.lego.com/en-us/product/andy-warhol-s-marilyn-monroe-31197)")
+tabAbout.subheader("Palettes:", divider=True)
+tabAbout.markdown("**16 Colors** - This option will reduce the input image to the best 16 colors it can find.")
+tabAbout.markdown("**Set 31197** - This option will try fit the image as best as it can to the colors used in [this set](https://www.lego.com/en-us/product/andy-warhol-s-marilyn-monroe-31197).")
+tabAbout.markdown("**Lego palette** - This option will attempt to fit the image to the actual lego palette (solid colors only)")
 
 
 if inputFile is not None:
